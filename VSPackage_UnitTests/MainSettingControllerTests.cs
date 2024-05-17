@@ -23,6 +23,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Windows;
 
 namespace VSPackage_UnitTests
 {
@@ -100,15 +101,18 @@ namespace VSPackage_UnitTests
             openCppCoverageCmdLine.Setup(o => o.Build(
                 It.IsAny<MainSettings>(), It.IsAny<string>())).Returns(commandLine);
 
-            var controller = CreateController(startUpProjectSettings, openCppCoverageCmdLine.Object);
-            Assert.IsNull(controller.CommandLineText);
+            Application.Current.Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.Loaded, new Action(() =>
+            {
+                var controller = CreateController(startUpProjectSettings, openCppCoverageCmdLine.Object);
+                Assert.IsNull(controller.CommandLineText);
 
-            controller.SelectedTab = new System.Windows.Controls.TabItem();
-            Assert.IsNull(controller.CommandLineText);
+                controller.SelectedTab = new System.Windows.Controls.TabItem();
+                Assert.IsNull(controller.CommandLineText);
 
-            controller.SelectedTab = new System.Windows.Controls.TabItem()
-            { Header = MainSettingController.CommandLineHeader };
-            Assert.AreEqual(commandLine, controller.CommandLineText);
+                controller.SelectedTab = new System.Windows.Controls.TabItem()
+                { Header = MainSettingController.CommandLineHeader };
+                Assert.AreEqual(commandLine, controller.CommandLineText);
+            }));
         }
 
         //---------------------------------------------------------------------
